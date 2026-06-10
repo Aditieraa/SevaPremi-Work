@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SevaPremi Internship Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=20260609-sync17" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#dashboard" aria-label="SevaPremi internship dashboard">
+        <span class="brand-mark">SP</span>
+        <span>
+          <strong>SevaPremi Internship</strong>
+          <small>Aditi Talekar Command Center</small>
+        </span>
+      </a>
+      <nav class="nav-tabs" aria-label="Main views">
+        <button class="nav-tab active" data-view="dashboard">Dashboard</button>
+        <button class="nav-tab" data-view="team">Team</button>
+        <button class="nav-tab" data-view="aditi">Aditi</button>
+        <button class="nav-tab" data-view="research">Research</button>
+        <button class="nav-tab" data-view="meetings">Meetings</button>
+        <button class="nav-tab" data-view="planner">Planner</button>
+      </nav>
+      <div class="sync-pill" id="syncStatus">Connecting to Supabase...</div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Reporting to Ajay · Team lead and coordinator</p>
+          <h1>500-hour SevaPremi internship tracker.</h1>
+          <p class="hero-copy">
+            Track hours, daily work reports, resources, meetings, solution templates, expert verification and next actions in one light, editable workspace.
+          </p>
+        </div>
+        <div class="hero-panel">
+          <div>
+            <span class="panel-label">Target</span>
+            <strong>500 hours</strong>
+          </div>
+          <div>
+            <span class="panel-label">Focus</span>
+            <strong>Research · Coordination · Tech · Promotion</strong>
+          </div>
+          <div>
+            <span class="panel-label">Launch Prep</span>
+            <strong>Platform readiness for August</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="setup-alert hidden" id="setupAlert">
+        <strong id="setupTitle">Supabase setup needed.</strong>
+        <span id="setupMessage">Create the tables using <code>supabase-schema.sql</code>. Your edits are being saved locally until Supabase accepts writes.</span>
+      </section>
+
+      <section class="view active" id="dashboard">
+        <div class="kpi-grid">
+          <article class="kpi-card">
+            <span>Total logged</span>
+            <strong id="totalHours">0h</strong>
+            <small>Across all members</small>
+          </article>
+          <article class="kpi-card">
+            <span>Aditi logged</span>
+            <strong id="aditiHours">0h</strong>
+            <small>Main user panel</small>
+          </article>
+          <article class="kpi-card">
+            <span>Team completion</span>
+            <strong id="teamPercent">0%</strong>
+            <small>Average progress to 500h</small>
+          </article>
+          <article class="kpi-card">
+            <span>Open work reports</span>
+            <strong id="openTasks">0</strong>
+            <small>Planned or in progress</small>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel wide">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Visual progress</p>
+                <h2>Member hour completion</h2>
+              </div>
+            </div>
+            <div class="progress-list" id="progressList"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Priority</p>
+                <h2>Next actions</h2>
+              </div>
+            </div>
+            <div class="next-actions" id="nextActions"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="team">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Editable roster</p>
+            <h2>Team members and hours</h2>
+          </div>
+          <button class="primary-btn" id="addMemberBtn">+ Add member</button>
+        </div>
+        <div class="member-grid" id="memberGrid"></div>
+      </section>
+
+      <section class="view" id="aditi">
+        <div class="aditi-layout">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Main user</p>
+                <h2>Aditi Talekar panel</h2>
+              </div>
+            </div>
+            <div class="profile-card" id="aditiProfile"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Daily records</p>
+                <h2>Add time log or work report</h2>
+              </div>
+            </div>
+            <form class="entry-form" id="taskForm">
+              <label>
+                Member
+                <select id="taskMember"></select>
+              </label>
+              <label>
+                Date
+                <input id="taskDate" type="date" required />
+              </label>
+              <label>
+                Hours
+                <input id="taskHours" type="number" min="0" step="0.25" value="1" required />
+              </label>
+              <label>
+                Status
+                <select id="taskStatus">
+                  <option>In Progress</option>
+                  <option>Planned</option>
+                  <option>Completed</option>
+                  <option>Blocked</option>
+                </select>
+              </label>
+              <label class="span-2">
+                Work / task report
+                <input id="taskTitle" type="text" placeholder="e.g. Reviewed UX issues and standardized template fields" required />
+              </label>
+              <label class="span-2">
+                Detailed notes
+                <textarea id="taskNotes" placeholder="Add detailed record, updates to Ajay, resources used, and follow-up work"></textarea>
+              </label>
+              <button class="primary-btn span-2" type="submit">Save work report</button>
+            </form>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">All records</p>
+              <h2>Work and time log</h2>
+            </div>
+          </div>
+          <div class="record-table" id="taskTable"></div>
+        </section>
+      </section>
+
+      <section class="view" id="research">
+        <div class="research-layout">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Excel fields</p>
+                <h2>Research ecosystem</h2>
+              </div>
+              <button class="secondary-btn" id="addResearchBtn">+ Add item</button>
+            </div>
+            <div class="research-list" id="researchList"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Solutions</p>
+                <h2>Repository and verification</h2>
+              </div>
+              <button class="secondary-btn" id="addSolutionBtn">+ Add solution</button>
+            </div>
+            <div class="solution-list" id="solutionList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="meetings">
+        <div class="meeting-layout">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Calls</p>
+                <h2>Meetings attended</h2>
+              </div>
+              <button class="secondary-btn" id="addMeetingBtn">+ Add meeting</button>
+            </div>
+            <div class="meeting-list" id="meetingList"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Resources</p>
+                <h2>Links and references</h2>
+              </div>
+              <button class="secondary-btn" id="addResourceBtn">+ Add resource</button>
+            </div>
+            <div class="resource-list" id="resourceList"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="planner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Weekly schedules</p>
+            <h2>Member weekly planner</h2>
+          </div>
+        </div>
+        <div class="planner-grid" id="plannerGrid"></div>
+      </section>
+    </main>
+
+    <dialog id="editorDialog">
+      <form method="dialog" class="dialog-card" id="editorForm">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow" id="dialogEyebrow">Edit</p>
+            <h2 id="dialogTitle">Record</h2>
+          </div>
+          <button class="icon-btn" value="cancel" aria-label="Close dialog">×</button>
+        </div>
+        <div class="dialog-fields" id="dialogFields"></div>
+        <div class="dialog-actions">
+          <button class="danger-btn" type="button" id="deleteBtn">Delete</button>
+          <span></span>
+          <button class="secondary-btn" value="cancel">Cancel</button>
+          <button class="primary-btn" value="default" id="saveDialogBtn">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="app.js?v=20260609-sync17"></script>
+  </body>
+</html>
